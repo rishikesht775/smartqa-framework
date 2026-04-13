@@ -11,15 +11,14 @@ public class ExtentManager {
 
         if (extent == null) {
 
-            ExtentSparkReporter reporter =
-                    new ExtentSparkReporter("test-output/ExtentReport.html");
+            ExtentSparkReporter spark =
+                    new ExtentSparkReporter("test-output/SparkReport.html");
 
-            // 🔥 ADD THESE 2 LINES (IMPORTANT)
-            reporter.config().setReportName("Smart QA Automation Report");
-            reporter.config().setDocumentTitle("Execution Report");
+            spark.config().setReportName("Smart QA Automation Report");
+            spark.config().setDocumentTitle("Execution Report");
 
             extent = new ExtentReports();
-            extent.attachReporter(reporter);
+            extent.attachReporter(spark);
         }
 
         return extent;
