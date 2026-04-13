@@ -14,17 +14,16 @@ public class ExtentHooks {
     public void beforeScenario(Scenario scenario) {
         test = extent.createTest(scenario.getName());
     }
-
-    @AfterStep
-    public void afterStep(Scenario scenario) {
-
+    @After
+    public void afterScenario(Scenario scenario) {
         if (scenario.isFailed()) {
-            test.fail("Step Failed");
+            test.fail("Scenario Failed: " + scenario.getName());
         } else {
-            test.pass("Step Passed");
+            test.pass("Scenario Passed: " + scenario.getName());
         }
-    }
 
+        extent.flush();  // 🔥 keep this
+    }
     @After
     public void afterScenario() {
         extent.flush();
