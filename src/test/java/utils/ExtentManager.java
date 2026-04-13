@@ -14,6 +14,10 @@ public class ExtentManager {
             ExtentSparkReporter reporter =
                     new ExtentSparkReporter("test-output/ExtentReport.html");
 
+            // 🔥 ADD THESE 2 LINES (IMPORTANT)
+            reporter.config().setReportName("Smart QA Automation Report");
+            reporter.config().setDocumentTitle("Execution Report");
+
             extent = new ExtentReports();
             extent.attachReporter(reporter);
         }
