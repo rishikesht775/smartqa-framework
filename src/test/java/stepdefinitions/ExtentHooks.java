@@ -12,7 +12,7 @@ public class ExtentHooks {
 
     @Before
     public void beforeScenario(Scenario scenario) {
-        test = extent.createTest(scenario.getName());
+    	test = extent.createTest("Selenium - " + scenario.getName());
     }
     @After
     public void afterScenario(Scenario scenario) {

@@ -16,7 +16,7 @@ public class LoginTest extends BasePWTest {
     @BeforeMethod
     public void start(Method method) {
         setup();
-        test = extent.createTest(method.getName());
+        test = extent.createTest("Playwright - " + method.getName());
     }
 
     @Test
