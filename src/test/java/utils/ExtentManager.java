@@ -12,7 +12,7 @@ public class ExtentManager {
         if (extent == null) {
 
             ExtentSparkReporter spark =
-                    new ExtentSparkReporter("test-output/SparkReport.html");
+                    new ExtentSparkReporter("test-output/ExtentReport.html");
 
             spark.config().setReportName("Smart QA Automation Report");
             spark.config().setDocumentTitle("Execution Report");

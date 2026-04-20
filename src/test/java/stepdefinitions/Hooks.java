@@ -1,29 +1,48 @@
 package stepdefinitions;
 
-import io.cucumber.java.After;
-import io.cucumber.java.Before;
-import io.cucumber.java.Scenario;
+import io.cucumber.java.*;
 import base.BaseTest;
-import utils.ScreenshotUtils;
+import playwright.base.BasePWTest;
+import utils.ScreenshotUtil;
 
-public class Hooks extends BaseTest {
+public class Hooks {
 
-    @Before
-    public void setup() {
-        System.out.println("HOOK BEFORE RUNNING");
-        super.setup();
+    @Before("@selenium")
+    public void setupSelenium() {
+        BaseTest.setup();
+    }
+
+    @Before("@playwright")
+    public void setupPlaywright() {
+
+        String browser = System.getProperty("browser", "chromium");
+
+        BasePWTest.setupPW(browser);
+    }
+
+    @After("@selenium")
+    public void tearDownSelenium() {
+        BaseTest.tearDown();
+    }
+
+    @After("@playwright")
+    public void tearDownPW() {
+        BasePWTest.tearDownPW();
     }
 
     @After
-    public void tearDown(Scenario scenario) {
+    public void screenshot(Scenario scenario) {
+
+        String path = ScreenshotUtil.capture(scenario.getName());
 
         if (scenario.isFailed()) {
-
-            String path = ScreenshotUtils.captureScreenshot(scenario.getName());
-            System.out.println("Screenshot saved at: " + path);
+            ExtentHooks.test.get()
+                .fail("Test Failed")
+                .addScreenCaptureFromPath(path);
+        } else {
+            ExtentHooks.test.get()
+                .pass("Test Passed")
+                .addScreenCaptureFromPath(path);
         }
-
-        System.out.println("HOOK AFTER RUNNING");
-        super.tearDown();
     }
 }

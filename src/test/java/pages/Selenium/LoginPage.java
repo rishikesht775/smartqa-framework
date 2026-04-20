@@ -1,23 +1,25 @@
-package pages;
+package pages.Selenium;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
-import driver.DriverFactory;
-import utils.WaitUtils;
-
 
 public class LoginPage {
 
-    WebDriver driver = DriverFactory.getDriver();
+    WebDriver driver;
 
     By username = By.id("user-name");
     By password = By.id("password");
     By loginBtn = By.id("login-button");
 
+    public LoginPage(WebDriver driver) {
+        this.driver = driver;
+    }
+
+    public void openURL() {
+        driver.get("https://www.saucedemo.com/");
+    }
+
     public void login(String user, String pass) {
-
-        WaitUtils.waitForElementVisible(username);
-
         driver.findElement(username).sendKeys(user);
         driver.findElement(password).sendKeys(pass);
         driver.findElement(loginBtn).click();
