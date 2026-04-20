@@ -16,32 +16,51 @@ public class ScreenshotUtil {
 
         try {
 
-            String path = "screenshots/" + name + ".png";
+            // ✅ Clean file name (important)
+            String fileName = name.replaceAll("[^a-zA-Z0-9]", "_") + ".png";
+
+            // ✅ Save OUTSIDE test-output
+            String folderPath = System.getProperty("user.dir") + "/screenshots/";
+            String fullPath = folderPath + fileName;
+
+            // ✅ Create folder if not exists
+            File folder = new File(folderPath);
+            if (!folder.exists()) {
+                folder.mkdirs();
+            }
 
             // ✅ Selenium case
-            if (DriverFactory.getDriver() != null) {
-
+            try {
                 WebDriver driver = DriverFactory.getDriver();
 
-                File src = ((TakesScreenshot) driver)
-                        .getScreenshotAs(OutputType.FILE);
+                if (driver != null) {
+                    File src = ((TakesScreenshot) driver)
+                            .getScreenshotAs(OutputType.FILE);
 
-                FileUtils.copyFile(src, new File(path));
-            }
+                    FileUtils.copyFile(src, new File(fullPath));
+
+                    // 🔥 RELATIVE PATH for Extent
+                    return "../screenshots/" + fileName;
+                }
+            } catch (Exception ignored) {}
 
             // ✅ Playwright case
-            else if (BasePWTest.getPage() != null) {
-
+            try {
                 Page page = BasePWTest.getPage();
 
-                page.screenshot(new Page.ScreenshotOptions()
-                        .setPath(Paths.get(path)));
-            }
+                if (page != null) {
+                    page.screenshot(new Page.ScreenshotOptions()
+                            .setPath(Paths.get(fullPath)));
 
-            return path;
+                    // 🔥 RELATIVE PATH for Extent
+                    return "../screenshots/" + fileName;
+                }
+            } catch (Exception ignored) {}
 
         } catch (Exception e) {
-            return null;
+            e.printStackTrace();
         }
+
+        return null;
     }
 }

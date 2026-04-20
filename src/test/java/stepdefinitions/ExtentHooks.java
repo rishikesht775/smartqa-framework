@@ -9,13 +9,31 @@ public class ExtentHooks {
     public static ExtentReports extent = ExtentManager.getInstance();
     public static ThreadLocal<ExtentTest> test = new ThreadLocal<>();
 
-    @Before
+    @Before(order = 0)
     public void beforeScenario(Scenario scenario) {
-        test.set(extent.createTest(scenario.getName()));
+
+        // 🔥 Create Extent test per scenario (thread-safe)
+        ExtentTest extentTest = extent.createTest(scenario.getName());
+
+        test.set(extentTest);
     }
 
-    @After
-    public void afterScenario() {
+    @After(order = 0)
+    public void afterScenario(Scenario scenario) {
+
+        // 🔥 Optional: log final status
+        if (test.get() != null) {
+            if (scenario.isFailed()) {
+                test.get().fail("❌ Scenario Failed");
+            } else {
+                test.get().pass("✅ Scenario Passed");
+            }
+        }
+
+        // 🔥 Flush AFTER EACH SCENARIO (safer than AfterAll)
         extent.flush();
+
+        // 🔥 Clean thread
+        test.remove();
     }
 }

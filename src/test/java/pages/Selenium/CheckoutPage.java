@@ -4,19 +4,20 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.openqa.selenium.support.ui.ExpectedConditions;
-import java.time.Duration;
 
+import java.time.Duration;
 
 public class CheckoutPage {
 
     WebDriver driver;
+    WebDriverWait wait;
 
     public CheckoutPage(WebDriver driver) {
         this.driver = driver;
+        this.wait = new WebDriverWait(driver, Duration.ofSeconds(15));
     }
 
     // 🔹 Locators
-    
     By checkoutBtn = By.id("checkout");
     By firstName = By.id("first-name");
     By lastName = By.id("last-name");
@@ -27,50 +28,31 @@ public class CheckoutPage {
 
     // 🔹 Actions
 
-    public void startCheckout() {
-        driver.findElement(checkoutBtn).click();
-    }
+    public void checkout(String f, String l, String zip) {
 
-    public void enterDetails(String f, String l, String zip) {
-        driver.findElement(firstName).sendKeys(f);
+        // ✅ Step 1: Click checkout (cart page)
+        wait.until(ExpectedConditions.elementToBeClickable(checkoutBtn)).click();
+
+        // ✅ Step 2: Fill details
+        wait.until(ExpectedConditions.visibilityOfElementLocated(firstName)).sendKeys(f);
         driver.findElement(lastName).sendKeys(l);
         driver.findElement(postalCode).sendKeys(zip);
         driver.findElement(continueBtn).click();
-    }
 
-    public void finishOrder() {
-
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-
-        // ✅ WAIT until Finish button is visible
-        wait.until(ExpectedConditions.visibilityOfElementLocated(finishBtn));
-
-        driver.findElement(finishBtn).click();
-    }
-    
-    public void checkout(String f, String l, String zip) {
-
-        // Step 1: Click Checkout (from cart page)
-        startCheckout();
-
-        // Step 2: Fill details
-        enterDetails(f, l, zip);
-
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(15));
-
-        // ✅ CRITICAL: Wait for Step 2 page
+        // ✅ Step 3: Wait for step 2 page
         wait.until(ExpectedConditions.urlContains("checkout-step-two"));
 
-        // DEBUG (optional)
         System.out.println("Current URL: " + driver.getCurrentUrl());
 
-        // Step 3: Click Finish
+        // ✅ Step 4: Click Finish
         wait.until(ExpectedConditions.elementToBeClickable(finishBtn)).click();
-    }
-    // 🔹 Validation
-    public String getSuccessMessage() {
-        return driver.findElement(successMsg).getText();
+
+        // 🔥 VERY IMPORTANT → wait for success page
+        wait.until(ExpectedConditions.visibilityOfElementLocated(successMsg));
     }
 
-   
+    // 🔹 Validation
+    public String getSuccessMessage() {
+        return wait.until(ExpectedConditions.visibilityOfElementLocated(successMsg)).getText();
+    }
 }

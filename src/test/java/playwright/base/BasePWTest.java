@@ -11,50 +11,78 @@ public class BasePWTest {
 
     public static void setupPW(String browserName) {
 
-        playwright.set(Playwright.create());
+        // 🔥 Safety: avoid null browserName
+        if (browserName == null) {
+            browserName = "chromium";
+        }
+
+        Playwright pw = Playwright.create();
+        playwright.set(pw);
 
         BrowserType browserType;
 
         switch (browserName.toLowerCase()) {
-
             case "firefox":
-                browserType = playwright.get().firefox();
+                browserType = pw.firefox();
                 break;
-
             case "webkit":
-                browserType = playwright.get().webkit();
+                browserType = pw.webkit();
                 break;
-
-            case "chrome":
-            case "chromium":
             default:
-                browserType = playwright.get().chromium();
-                break;
+                browserType = pw.chromium();
         }
 
-        browser.set(
-            browserType.launch(
+        Browser br = browserType.launch(
                 new BrowserType.LaunchOptions().setHeadless(false)
-            )
         );
+        browser.set(br);
 
-        context.set(browser.get().newContext());
-        page.set(context.get().newPage());
+        BrowserContext ctx = br.newContext();
+        context.set(ctx);
+
+        Page pg = ctx.newPage();
+        page.set(pg);  // 🔥 CRITICAL: must be set
+
+        // 🔥 DEBUG (optional)
+        System.out.println("Playwright browser started: " + browserName);
     }
 
     public static Page getPage() {
+
+        if (page.get() == null) {
+            throw new RuntimeException("❌ Playwright Page is NULL! setupPW() not called.");
+        }
+
         return page.get();
     }
 
     public static void tearDownPW() {
 
-        if (context.get() != null) context.get().close();
-        if (browser.get() != null) browser.get().close();
-        if (playwright.get() != null) playwright.get().close();
+        try {
+            if (page.get() != null) {
+                page.get().close();
+            }
 
+            if (context.get() != null) {
+                context.get().close();
+            }
+
+            if (browser.get() != null) {
+                browser.get().close();
+            }
+
+            if (playwright.get() != null) {
+                playwright.get().close();
+            }
+
+        } catch (Exception e) {
+            System.out.println("⚠ Error during Playwright teardown: " + e.getMessage());
+        }
+
+        // 🔥 VERY IMPORTANT (for parallel execution)
+        page.remove();
         context.remove();
         browser.remove();
         playwright.remove();
-        page.remove();
     }
 }
