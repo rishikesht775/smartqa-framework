@@ -1,7 +1,16 @@
 <!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
-<suite name="SmartQA Hybrid Suite" parallel="methods" thread-count="3">
+<suite name="SmartQA Hybrid Suite" parallel="tests" thread-count="2">
 
-    <test name="Cucumber Tests">
+    <!-- Selenium Run -->
+    <test name="Selenium Tests">
+        <parameter name="browser" value="chrome"/>
+        <classes>
+            <class name="runners.TestRunner"/>
+        </classes>
+    </test>
+
+    <!-- Playwright Run -->
+    <test name="Playwright Tests">
         <classes>
             <class name="runners.TestRunner"/>
         </classes>
