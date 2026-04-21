@@ -16,51 +16,41 @@ public class ScreenshotUtil {
 
         try {
 
-            // ✅ Clean file name (important)
-            String fileName = name.replaceAll("[^a-zA-Z0-9]", "_") + ".png";
-
-            // ✅ Save OUTSIDE test-output
-            String folderPath = System.getProperty("user.dir") + "/screenshots/";
-            String fullPath = folderPath + fileName;
-
             // ✅ Create folder if not exists
-            File folder = new File(folderPath);
-            if (!folder.exists()) {
-                folder.mkdirs();
+            String dirPath = System.getProperty("user.dir") + "/test-output/screenshots/";
+            File dir = new File(dirPath);
+            if (!dir.exists()) {
+                dir.mkdirs();
             }
 
-            // ✅ Selenium case
-            try {
+            String filePath = dirPath + name.replaceAll(" ", "_") + ".png";
+
+            // ✅ Selenium
+            if (DriverFactory.getDriver() != null) {
+
                 WebDriver driver = DriverFactory.getDriver();
 
-                if (driver != null) {
-                    File src = ((TakesScreenshot) driver)
-                            .getScreenshotAs(OutputType.FILE);
+                File src = ((TakesScreenshot) driver)
+                        .getScreenshotAs(OutputType.FILE);
 
-                    FileUtils.copyFile(src, new File(fullPath));
+                FileUtils.copyFile(src, new File(filePath));
+            }
 
-                    // 🔥 RELATIVE PATH for Extent
-                    return "../screenshots/" + fileName;
-                }
-            } catch (Exception ignored) {}
+            // ✅ Playwright
+            else if (BasePWTest.getPage() != null) {
 
-            // ✅ Playwright case
-            try {
                 Page page = BasePWTest.getPage();
 
-                if (page != null) {
-                    page.screenshot(new Page.ScreenshotOptions()
-                            .setPath(Paths.get(fullPath)));
+                page.screenshot(new Page.ScreenshotOptions()
+                        .setPath(Paths.get(filePath)));
+            }
 
-                    // 🔥 RELATIVE PATH for Extent
-                    return "../screenshots/" + fileName;
-                }
-            } catch (Exception ignored) {}
+            // 🔥 RETURN ABSOLUTE PATH (CRITICAL)
+            return filePath;
 
         } catch (Exception e) {
             e.printStackTrace();
+            return null;
         }
-
-        return null;
     }
 }
