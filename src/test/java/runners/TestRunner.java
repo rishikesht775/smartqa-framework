@@ -11,7 +11,7 @@ import org.testng.annotations.DataProvider;
                 "pretty",
                 "html:target/cucumber-report.html"
         },
-        //tags = "@selenium",   // ✅ FIX: use "tags" and proper syntax
+       //tags = "@selenium",   // ✅ FIX: use "tags" and proper syntax
         monochrome = true
 )
 public class TestRunner extends AbstractTestNGCucumberTests {

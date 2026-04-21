@@ -26,33 +26,34 @@ public class CheckoutPage {
     By finishBtn = By.id("finish");
     By successMsg = By.className("complete-header");
 
-    // 🔹 Actions
-
+    // 🔹 Main Checkout Flow
     public void checkout(String f, String l, String zip) {
 
-        // ✅ Step 1: Click checkout (cart page)
+        // ✅ Step 1: Click Checkout (WITH WAIT)
         wait.until(ExpectedConditions.elementToBeClickable(checkoutBtn)).click();
 
-        // ✅ Step 2: Fill details
-        wait.until(ExpectedConditions.visibilityOfElementLocated(firstName)).sendKeys(f);
+        // ✅ Step 2: Fill Details (NO WAIT)
+        driver.findElement(firstName).clear();
+        driver.findElement(firstName).sendKeys(f);
+
+        driver.findElement(lastName).clear();
         driver.findElement(lastName).sendKeys(l);
+
+        driver.findElement(postalCode).clear();
         driver.findElement(postalCode).sendKeys(zip);
-        driver.findElement(continueBtn).click();
 
-        // ✅ Step 3: Wait for step 2 page
-        wait.until(ExpectedConditions.urlContains("checkout-step-two"));
+        // ✅ Step 3: Click Continue (WITH WAIT)
+        wait.until(ExpectedConditions.elementToBeClickable(continueBtn)).click();
 
+        // ✅ Step 4: Print URL
         System.out.println("Current URL: " + driver.getCurrentUrl());
 
-        // ✅ Step 4: Click Finish
+        // ✅ Step 5: Click Finish (WITH WAIT)
         wait.until(ExpectedConditions.elementToBeClickable(finishBtn)).click();
-
-        // 🔥 VERY IMPORTANT → wait for success page
-        wait.until(ExpectedConditions.visibilityOfElementLocated(successMsg));
     }
 
-    // 🔹 Validation
+    // 🔹 Validation (optional wait — can remove if not needed)
     public String getSuccessMessage() {
-        return wait.until(ExpectedConditions.visibilityOfElementLocated(successMsg)).getText();
+        return driver.findElement(successMsg).getText();
     }
 }
